@@ -1,0 +1,10 @@
+﻿{
+  "Name": "d",
+  "Author": "f",
+  "Version": "1.0.0",
+  "Description": "One or two sentences about the mod",
+  "UniqueID": "f.d",
+  "EntryDll": "EventLimiter.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": []
+}
