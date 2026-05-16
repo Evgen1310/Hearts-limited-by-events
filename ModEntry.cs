@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
 using static StardewValley.Menus.SocialPage;
@@ -11,6 +12,25 @@ namespace EventLimiter
     /// <summary>The mod entry point.</summary>
     internal sealed class ModEntry : Mod
     {
+        private static ModEntry _instance;
+
+        /// <summary>Список поддерживаемых имён.</summary>
+        private string[] Names = { "Shane"};
+
+        /// <summary>имя персонажа, [сердца, доступно ли]</summary>
+        private Dictionary<string, Dictionary<int, bool>> DictNames = new Dictionary<string, Dictionary<int, bool>>();
+
+        private static Dictionary<int, string> EventsShane = new Dictionary<int, string>()
+        {
+            { 2, "611944"},
+            { 4, "3910674"},
+            { 6, "2118991"},
+            { 7, "3910974" },
+            { 8, "3900074"},
+            { 10, "9581348"},
+            { 14, "-1"}
+        };
+
         /*********
         ** Public methods
         *********/
@@ -18,8 +38,55 @@ namespace EventLimiter
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
+            _instance = this;
+
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+        }
+
+        private void GameLoop_SaveLoaded(object? sender, SaveLoadedEventArgs e)
+        {
+            UpdateDicts();
+        }
+
+        [HarmonyPatch(typeof(Game1), nameof(Game1.eventFinished))]
+        public class Game1_EventFinished_Patch
+        {
+            public static void Postfix()
+            {
+                _instance?.UpdateDicts();
+            }
+        }
+
+        private void UpdateDicts()
+        {
+            DictNames.Clear();
+            foreach (var character in Names)
+            {
+                DictNames[character] = GetBoolDictsForCharacter(character);
+            }
+        }
+
+        public static Dictionary<int, bool> GetBoolDictsForCharacter(string name)
+        {
+            var result = new Dictionary<int, bool>();
+            var eventsDict = GetEventsDictForCharacter(name);
+            foreach (var pair in eventsDict)
+            {
+                result[pair.Key] = Game1.player.eventsSeen.Contains(pair.Value);
+            }
+            return result;
+        }
+
+        public static Dictionary<int, string> GetEventsDictForCharacter(string name)
+        {
+            switch (name)
+            {
+                case "Shane":
+                    return EventsShane;
+            }
+            return new Dictionary<int, string>();
         }
 
         [HarmonyPatch(typeof(Utility), nameof(Utility.GetMaximumHeartsForCharacter))]
@@ -27,19 +94,34 @@ namespace EventLimiter
         {
             public static bool Prefix(Character character, ref int __result)
             {
-                switch ((string)character.Name)
+                if (!_instance.Names.Contains(character.Name)) //abort if unknown character
                 {
-                    case "Shane":
-                        if (Game1.player.eventsSeen.Contains("611944"))
-                        {
-                            __result = 5;
-                            return false;
-                        }
-                        break;
+                    return true;
                 }
-                __result = 2;
-                return false;
+
+                var hearts = _instance?.GetMaxHeartsForCharacter((string)character.Name);
+                if (hearts is int beda)
+                {
+                    __result = beda;
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
+        }
+
+        public int GetMaxHeartsForCharacter(string name)
+        {
+            var dict = GetDictForCharacter(name);
+            var result = dict.FirstOrDefault(pair => pair.Value == false);
+            return result.Key;
+        }
+
+        private Dictionary<int, bool> GetDictForCharacter(string name)
+        {
+            return DictNames[name];
         }
 
         [HarmonyPatch(typeof(ProfileMenu), "draw")]
@@ -52,7 +134,7 @@ namespace EventLimiter
                     return;
                 }
                 int maxHearts = Utility.GetMaximumHeartsForCharacter(npc);
-                if (maxHearts >= 10) return;
+                if (maxHearts >= 10) return; //think about spouces
 
                 int drawn_hearts = Math.Max(10, Utility.GetMaximumHeartsForCharacter(npc));
                 float heart_draw_start_x = ____heartDisplayPosition.X - (float)(Math.Min(10, drawn_hearts) * 32 / 2);
