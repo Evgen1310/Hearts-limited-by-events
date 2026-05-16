@@ -15,7 +15,11 @@ namespace EventLimiter
         private static ModEntry _instance;
 
         /// <summary>Список поддерживаемых имён.</summary>
-        private string[] Names = { "Shane"};
+        private string[] Names = { "Shane", "Alex", "Sebastian", "Sam", "Harvey"
+        , "Elliott", "Abigail", "Leah", "Maru", "Penny", "Haley", "Emily", "Willy"
+        , "Vincent", "Wizard", "Gus", "Demetrius", "Jas", "Jodi", "George"
+        , "Kent", "Clint", "Krobus", "Caroline", "Leo", "Linus", "Lewis"
+        , "Marnie", "Pam", "Pierre", "Robin", "Evelyn"};
 
         /// <summary>имя персонажа, [сердца, доступно ли]</summary>
         private Dictionary<string, Dictionary<int, bool>> DictNames = new Dictionary<string, Dictionary<int, bool>>();
@@ -31,6 +35,240 @@ namespace EventLimiter
             { 14, "-1"}
         };
 
+        private static Dictionary<int, string> EventsAlex = new Dictionary<int, string>()
+        {
+            { 4, "2481135"},
+            { 5, "21"},
+            { 6, "2119820"},
+            { 8, "288847"},
+            { 10, "911526"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsSebastian = new Dictionary<int, string>()
+        {
+            { 2, "2794460"},
+            { 4, "384883"},
+            { 6, "27"},
+            { 8, "29"},
+            { 10, "384882"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsSam = new Dictionary<int, string>()
+        {
+            { 2, "44"},
+            { 4, "46"},
+            { 6, "45"},
+            { 8, "4081148"},
+            { 10, "233104"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsHarvey = new Dictionary<int, string>()
+        {
+            { 2, "56"},
+            { 4, "57"},
+            { 6, "58"},
+            { 8, "571102"},
+            { 10, "528052"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsElliott = new Dictionary<int, string>()
+        {
+            { 2, "39"},
+            { 4, "40"},
+            { 6, "423502"},
+            { 8, "1848481"},
+            { 10, "43"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsAbigail = new Dictionary<int, string>()
+        {
+            { 2, "1"},
+            { 4, "2"}, // 2 (дождь, горы, флейта) Нужна? Optional
+            { 6, "4"},
+            { 8, "3"},
+            { 10, "901756"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsLeah = new Dictionary<int, string>()
+        {
+            { 2, "50"},
+            { 4, "51"},
+            { 6, "52"},
+            { 8, "55"},
+            { 10, "54"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsMaru = new Dictionary<int, string>()
+        {
+            { 2, "6"},
+            { 4, "7"},
+            { 6, "8"},
+            { 8, "9"},
+            { 10, "10"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsPenny = new Dictionary<int, string>()
+        {
+            { 2, "34"}, // (geroge wheelchair)
+            { 4, "35"},
+            { 6, "36"},
+            { 8, "181928"},
+            { 10, "38"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsHaley = new Dictionary<int, string>()
+        {
+            { 2, "11"},
+            { 4, "12"},
+            { 6, "13"},
+            { 8, "14"},
+            { 10, "15"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsEmily = new Dictionary<int, string>()
+        {
+            { 2, "471942"},
+            { 4, "463391"},
+            { 6, "917409"},
+            { 8, "2123243"},
+            { 10, "2123343"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsWilly = new Dictionary<int, string>()
+        {
+            { 6, "711130"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsVincent = new Dictionary<int, string>()
+        {
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsWizard = new Dictionary<int, string>()
+        {
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsGus = new Dictionary<int, string>()
+        {
+            { 4, "96"},
+            { 5, "980558"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsDemetrius = new Dictionary<int, string>()
+        {
+            { 6, "25"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsJas = new Dictionary<int, string>()
+        {
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsJodi = new Dictionary<int, string>()
+        {
+            { 4, "94"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsGeorge = new Dictionary<int, string>()
+        {
+            { 6, "18"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsKent = new Dictionary<int, string>()
+        {
+            { 6, "100"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsClint = new Dictionary<int, string>()
+        {
+            { 3, "97"},
+            { 6, "101"}, // (not if 8/10 heart emily or spouce)
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsKrobus = new Dictionary<int, string>()
+        {
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsCaroline = new Dictionary<int, string>()
+        {
+            { 2, "719926"},
+            { 6, "17"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsLeo = new Dictionary<int, string>()
+        {
+            { 2, "6497423"},
+            { 4, "6497421"},
+            { 6, "6497428"},
+            { 9, "8959199"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsLinus = new Dictionary<int, string>()
+        {
+            { 4, "26"},
+            { 8, "371652"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsLewis = new Dictionary<int, string>()
+        {
+            { 6, "639373"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsMarnie = new Dictionary<int, string>()
+        {
+            { 3, "92"},
+            { 6, "639373"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsPam = new Dictionary<int, string>()
+        {
+            { 9, "503180"}, // (BUILD THE HOUSE DAMN)
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsPierre = new Dictionary<int, string>()
+        {
+            { 6, "16"}, // (not really relevent? about secret stash)
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsRobin = new Dictionary<int, string>()
+        {
+            { 6, "33"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsEvelyn = new Dictionary<int, string>()
+        {
+            { 4, "19"},
+            { 10, "-1"},
+        };
+
         /*********
         ** Public methods
         *********/
@@ -39,7 +277,6 @@ namespace EventLimiter
         public override void Entry(IModHelper helper)
         {
             _instance = this;
-
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
@@ -64,7 +301,7 @@ namespace EventLimiter
             DictNames.Clear();
             foreach (var character in Names)
             {
-                DictNames[character] = GetBoolDictsForCharacter(character);
+                DictNames.Add(character, GetBoolDictsForCharacter(character));
             }
         }
 
@@ -74,7 +311,7 @@ namespace EventLimiter
             var eventsDict = GetEventsDictForCharacter(name);
             foreach (var pair in eventsDict)
             {
-                result[pair.Key] = Game1.player.eventsSeen.Contains(pair.Value);
+                result.Add(pair.Key, Game1.player.eventsSeen.Contains(pair.Value));
             }
             return result;
         }
@@ -83,8 +320,70 @@ namespace EventLimiter
         {
             switch (name)
             {
+                case "Alex":
+                    return EventsAlex;
+                case "Sebastian":
+                    return EventsSebastian;
+                case "Sam":
+                    return EventsSam;
                 case "Shane":
                     return EventsShane;
+                case "Harvey":
+                    return EventsHarvey;
+                case "Elliott":
+                    return EventsElliott;
+                case "Abigail":
+                    return EventsAbigail;
+                case "Leah":
+                    return EventsLeah;
+                case "Maru":
+                    return EventsMaru;
+                case "Penny":
+                    return EventsPenny;
+                case "Haley":
+                    return EventsHaley;
+                case "Emily":
+                    return EventsEmily;
+                case "Willy":
+                    return EventsWilly;
+                case "Vincent":
+                    return EventsVincent;
+                case "Wizard":
+                    return EventsWizard;
+                case "Gus":
+                    return EventsGus;
+                case "Demetrius":
+                    return EventsDemetrius;
+                case "Jas":
+                    return EventsJas;
+                case "Jodi":
+                    return EventsJodi;
+                case "George":
+                    return EventsGeorge;
+                case "Kent":
+                    return EventsKent;
+                case "Clint":
+                    return EventsClint;
+                case "Krobus":
+                    return EventsKrobus;
+                case "Caroline":
+                    return EventsCaroline;
+                case "Leo":
+                    return EventsLeo;
+                case "Linus":
+                    return EventsLinus;
+                case "Lewis":
+                    return EventsLewis;
+                case "Marnie":
+                    return EventsMarnie;
+                case "Pam":
+                    return EventsPam;
+                case "Pierre":
+                    return EventsPierre;
+                case "Robin":
+                    return EventsRobin;
+                case "Evelyn":
+                    return EventsEvelyn;
             }
             return new Dictionary<int, string>();
         }
@@ -112,15 +411,19 @@ namespace EventLimiter
             }
         }
 
-        public int GetMaxHeartsForCharacter(string name)
+        public int? GetMaxHeartsForCharacter(string name)
         {
             var dict = GetDictForCharacter(name);
+            if (dict is null)
+                return null;
             var result = dict.FirstOrDefault(pair => pair.Value == false);
             return result.Key;
         }
 
-        private Dictionary<int, bool> GetDictForCharacter(string name)
+        private Dictionary<int, bool>? GetDictForCharacter(string name)
         {
+            if (!DictNames.Keys.Contains(name))
+                return null;
             return DictNames[name];
         }
 
