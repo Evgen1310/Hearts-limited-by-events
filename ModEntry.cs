@@ -12,7 +12,11 @@ namespace EventLimiter
     /// <summary>The mod entry point.</summary>
     internal sealed class ModEntry : Mod
     {
-        private static ModEntry _instance;
+        private static ModEntry? _instance;
+
+        private static bool _ifImmersiveShane;
+        private static bool _ifImmersiveMarnie;
+        private static bool _ifImmersiveJas;
 
         /// <summary>Список поддерживаемых имён.</summary>
         private string[] Names = { "Shane", "Alex", "Sebastian", "Sam", "Harvey"
@@ -24,7 +28,7 @@ namespace EventLimiter
         /// <summary>имя персонажа, [сердца, доступно ли]</summary>
         private Dictionary<string, Dictionary<int, bool>> DictNames = new Dictionary<string, Dictionary<int, bool>>();
 
-        private static Dictionary<int, string> EventsShane = new Dictionary<int, string>()
+        private static Dictionary<int, string> EventsShane_Vanilla = new Dictionary<int, string>()
         {
             { 2, "611944"},
             { 4, "3910674"},
@@ -32,6 +36,17 @@ namespace EventLimiter
             { 7, "3910974" },
             { 8, "3900074"},
             { 10, "9581348"},
+            { 14, "-1"}
+        };
+
+        private static Dictionary<int, string> EventsShane_Immersive = new Dictionary<int, string>()
+        {
+            { 2, "611944"},
+            { 4, "3910674"},
+            { 6, "2118991"},
+            { 7, "3910974" },
+            { 8, "9581348"},
+            { 10, "59443111"},
             { 14, "-1"}
         };
 
@@ -174,8 +189,17 @@ namespace EventLimiter
             { 10, "-1"},
         };
 
-        private static Dictionary<int, string> EventsJas = new Dictionary<int, string>()
+        private static Dictionary<int, string> EventsJas_Vanilla = new Dictionary<int, string>()
         {
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsJas_Immersive = new Dictionary<int, string>()
+        {
+            { 2, "50706112"},
+            { 4, "50706113"},
+            { 7, "50706114"},
+            { 8, "50706115"},
             { 10, "-1"},
         };
 
@@ -238,10 +262,18 @@ namespace EventLimiter
             { 10, "-1"},
         };
 
-        private static Dictionary<int, string> EventsMarnie = new Dictionary<int, string>()
+        private static Dictionary<int, string> EventsMarnie_Vanilla = new Dictionary<int, string>()
         {
             { 3, "92"},
             { 6, "639373"},
+            { 10, "-1"},
+        };
+
+        private static Dictionary<int, string> EventsMarnie_Immersive = new Dictionary<int, string>()
+        {
+            { 2, "50706102"},
+            { 4, "50706104"},
+            { 8, "50706108"},
             { 10, "-1"},
         };
 
@@ -277,6 +309,9 @@ namespace EventLimiter
         public override void Entry(IModHelper helper)
         {
             _instance = this;
+            _ifImmersiveShane = this.Helper.ModRegistry.IsLoaded("tenthousandcats.ImmersiveCShane");
+            _ifImmersiveMarnie = this.Helper.ModRegistry.IsLoaded("Lemurkat.MarnieRanchPack.CP");
+            _ifImmersiveJas = this.Helper.ModRegistry.IsLoaded("Lemurkat.JasRanchPack.CP");
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
@@ -327,7 +362,14 @@ namespace EventLimiter
                 case "Sam":
                     return EventsSam;
                 case "Shane":
-                    return EventsShane;
+                    if (_ifImmersiveShane)
+                    {
+                        return EventsShane_Immersive;
+                    }
+                    else
+                    {
+                        return EventsShane_Vanilla;
+                    }
                 case "Harvey":
                     return EventsHarvey;
                 case "Elliott":
@@ -355,7 +397,14 @@ namespace EventLimiter
                 case "Demetrius":
                     return EventsDemetrius;
                 case "Jas":
-                    return EventsJas;
+                    if (_ifImmersiveJas)
+                    {
+                        return EventsJas_Immersive;
+                    }
+                    else
+                    {
+                        return EventsJas_Vanilla;
+                    }
                 case "Jodi":
                     return EventsJodi;
                 case "George":
@@ -375,7 +424,14 @@ namespace EventLimiter
                 case "Lewis":
                     return EventsLewis;
                 case "Marnie":
-                    return EventsMarnie;
+                    if (_ifImmersiveMarnie)
+                    {
+                        return EventsMarnie_Immersive;
+                    }
+                    else
+                    {
+                        return EventsMarnie_Vanilla;
+                    }
                 case "Pam":
                     return EventsPam;
                 case "Pierre":
