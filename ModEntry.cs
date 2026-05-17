@@ -449,11 +449,6 @@ namespace EventLimiter
         {
             public static bool Prefix(Character character, ref int __result)
             {
-                if (!_instance.Names.Contains(character.Name)) //abort if unknown character
-                {
-                    return true;
-                }
-
                 var hearts = _instance?.GetMaxHeartsForCharacter((string)character.Name);
                 if (hearts is int beda)
                 {
