@@ -14,10 +14,33 @@ namespace EventLimiter
 
         public static bool Utility_GetMaximumHeartsForCharacter_Prefix(Character character, ref int __result)
         {
-            var hearts = ModEntry.Instance.GetMaxHeartsForCharacter((string)character.Name);
-            if (hearts is int result)
+            if (character == null)
             {
-                __result = result;
+                return true;
+            }
+            bool datable = false;
+            var result = ModEntry.Instance.GetMaxHeartsForCharacter((string)character.Name);
+
+            if (character is NPC npc && npc.datable.Value)
+            {
+                datable = true;
+            }
+            if (datable && result > 8 && Game1.player.friendshipData.TryGetValue(character.Name, out var friendship))
+            {
+                if (!friendship.IsDating())
+                {
+                    __result = 8;
+                    return false;
+                }
+                else if (!friendship.IsMarried())
+                {
+                    __result = 10;
+                    return false;
+                }
+            }
+            if (result is int max_hearts)
+            {
+                __result = max_hearts;
                 return false;
             }
             else
@@ -33,7 +56,7 @@ namespace EventLimiter
                 return;
             }
             int maxHearts = Utility.GetMaximumHeartsForCharacter(npc);
-            if (maxHearts >= 10) return; //think about spouces
+            if (maxHearts >= 10) return;
 
             int drawn_hearts = Math.Max(10, Utility.GetMaximumHeartsForCharacter(npc));
             float heart_draw_start_x = ____heartDisplayPosition.X - (float)(Math.Min(10, drawn_hearts) * 32 / 2);
