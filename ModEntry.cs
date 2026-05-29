@@ -23,6 +23,7 @@ internal sealed class ModEntry : Mod
         _eventsProvider = new CharacterEventsProvider();
         _eventsProvider.Settings.AddRange(new[]
         {
+            "FlashShifter.StardewValleyExpandedCP",
             "tenthousandcats.ImmersiveCShane",
             "Lemurkat.MarnieRanchPack.CP",
             "Lemurkat.JasRanchPack.CP"
