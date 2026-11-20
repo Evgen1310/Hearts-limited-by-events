@@ -20,8 +20,8 @@ internal sealed class ModEntry : Mod
     {
         _instance = this;
 
-        _eventsProvider = new CharacterEventsProvider();
-        _eventsProvider.Settings.AddRange(new[]
+        var modsUsed = new List<string>();
+        modsUsed.AddRange(new[]
         {
             "FlashShifter.StardewValleyExpandedCP",
             "tenthousandcats.ImmersiveCShane",
@@ -29,7 +29,10 @@ internal sealed class ModEntry : Mod
             "Lemurkat.JasRanchPack.CP"
         }.Where(modId => helper.ModRegistry.IsLoaded(modId)));
 
+        _eventsProvider = new CharacterEventsProvider(this.Helper, this.Monitor, modsUsed);
+
         helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+
         var harmony = new Harmony(ModManifest.UniqueID);
         harmony.Patch(
             original: AccessTools.Method(typeof(Game1), nameof(Game1.eventFinished)),
@@ -51,6 +54,17 @@ internal sealed class ModEntry : Mod
             original: AccessTools.Method(typeof(SocialPage), nameof(SocialPage.drawNPCSlot)),
             postfix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.SocialPage_DrawNPCSlot_Postfix))
         );
+
+        //var data = this.Helper.Data.ReadJsonFile<Dictionary<string, Dictionary<int, string>>>("assets/data.json");
+        //string path = Path.Combine(this.Helper.DirectoryPath, @"Characters\Shane_default.txt");
+        //string jsonString = File.ReadAllText(path);
+
+        //var nestedDict = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, string>>>(jsonString)
+        //         ?? new Dictionary<string, Dictionary<string, string>>();
+
+        ////// Доступ к элементам
+        //string prodHost = nestedDict["Production"]["Host"]; // "://example.com"
+        //Monitor.Log($"Production Host: {prodHost}", LogLevel.Debug);
     }
 
     private void GameLoop_SaveLoaded(object? sender, SaveLoadedEventArgs e)
@@ -60,6 +74,8 @@ internal sealed class ModEntry : Mod
 
     public void UpdateDicts()
     {
+        if (!_eventsProvider.Settings.Contains("joja") &&  Utility.HasAnyPlayerSeenEvent("191393"))
+            _eventsProvider.Settings.Add("joja");
         if (!_eventsProvider.Settings.Contains("no_emily") && Game1.player.eventsSeen.Contains("2123243"))
             _eventsProvider.Settings.Add("no_emily"); //just for you, Clint. feeling special?
 

@@ -1,16 +1,60 @@
-﻿namespace EventLimiter
+﻿using StardewModdingAPI;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Text.Unicode;
+
+namespace EventLimiter
 {
     internal sealed class CharacterEventsProvider
     {
         public List<string> Settings { get; } = new();
+        public IModHelper helper;
+        public IMonitor monitor;
+        public string path;
+        private string prefix;
+        private readonly Dictionary<string, Dictionary<string, Dictionary<int, string>>> _eventsData = 
+            new Dictionary<string, Dictionary<string, Dictionary<int, string>>>();
 
-        private readonly Dictionary<string, Dictionary<string, Dictionary<int, string>>> _eventsData;
-
-        public CharacterEventsProvider()
+        public CharacterEventsProvider(IModHelper helper, IMonitor monitor, List<String> settings)
         {
-            //_eventsData = Settings.Contains("FlashShifter.StardewValleyExpandedCP") ? InitializeEventsData_SVE() : InitializeEventsData();
-            _eventsData = InitializeEventsData_SVE();
+            this.Settings = settings;
+            this.helper = helper;
+            this.monitor = monitor;
+            this.path = helper.DirectoryPath + "/Characters/";
+            this.prefix = hasSve(settings) ? "sve" : "vanilla";
 
+            _eventsData = readEventsDataExternal();
+        }
+
+        private bool hasSve(List<string> settings) {
+            return settings.Contains("FlashShifter.StardewValleyExpandedCP");
+        }
+
+        private Dictionary<string, Dictionary<string, Dictionary<int, string>>> readEventsDataExternal()
+        {
+            var result = new Dictionary<string, Dictionary<string, Dictionary<int, string>>>();
+
+            string[] fileNames = Directory.GetFiles(path)
+                .Select(Path.GetFileName)
+                .ToArray()!;
+
+            string[] matched = fileNames
+                .Where(s => Regex.IsMatch(s, @"\\*.json"))
+                .ToArray();
+
+            foreach (string filename in matched)
+            {
+                var data = helper.Data.ReadJsonFile<Dictionary<string, Dictionary<int, string>>>($"Characters/{filename}");
+                if (data != null)
+                    result[Path.GetFileNameWithoutExtension(filename)] = data;
+            }
+            return result;
+        }
+
+        private Dictionary<string, Dictionary<string, Dictionary<int, string>>> readEventsDataInternal()
+        {
+            return Settings.Contains("FlashShifter.StardewValleyExpandedCP") ? InitializeEventsData_SVE() : InitializeEventsData();
         }
 
         public Dictionary<int, string>? GetEventsDictForCharacter(string characterName)
@@ -19,26 +63,58 @@
                 return null;
 
             switch (characterName)
-            {
+            { // TODO: добавь Scarlett
                 case "Shane":
                     if (Settings.Contains("tenthousandcats.ImmersiveCShane"))
-                        return variants.TryGetValue("immersive", out var dict) ? dict : variants["vanilla"];
+                        return variants.TryGetValue(this.prefix + "_immersive", out var dict) ? dict : variants[this.prefix];
                     break;
                 case "Marnie":
                     if (Settings.Contains("Lemurkat.MarnieRanchPack.CP"))
-                        return variants.TryGetValue("immersive", out var dict) ? dict : variants["vanilla"];
+                        return variants.TryGetValue(this.prefix + "_immersive", out var dict) ? dict : variants[this.prefix];
                     break;
                 case "Jas":
                     if (Settings.Contains("Lemurkat.JasRanchPack.CP"))
-                        return variants.TryGetValue("immersive", out var dict) ? dict : variants["vanilla"];
+                        return variants.TryGetValue(this.prefix + "_immersive", out var dict) ? dict : variants[this.prefix];
+                    if (Settings.Contains("mature")) // !!!TODO!!!
+                        return variants.TryGetValue("vanilla_mature", out var dict) ? dict : variants[this.prefix];
                     break;
                 case "Clint":
                     if (Settings.Contains("no_emily"))
-                        return variants.TryGetValue("no_emily", out var dict) ? dict : variants["vanilla"];
+                        return variants.TryGetValue(this.prefix + "_no_emily", out var dict) ? dict : variants[this.prefix];
                     break;
+                case "Krobus":
+                    if (Settings.Contains("joja"))
+                        return variants.TryGetValue(this.prefix + "_joja", out var dict) ? dict : variants[this.prefix];
+                    break; // Посмотри у Джорджа mature ивент, пересмотри по остальным ивенты
             }
 
-            return variants.TryGetValue("vanilla", out var defaultDict)
+            //switch (characterName)
+            //{
+            //    case "Shane":
+            //        if (Settings.Contains("tenthousandcats.ImmersiveCShane"))
+            //            return variants.TryGetValue("immersive", out var dict) ? dict : variants["vanilla"];
+            //        break;
+            //    case "Marnie":
+            //        if (Settings.Contains("Lemurkat.MarnieRanchPack.CP"))
+            //            return variants.TryGetValue("immersive", out var dict) ? dict : variants["vanilla"];
+            //        break;
+            //    case "Jas":
+            //        if (Settings.Contains("Lemurkat.JasRanchPack.CP"))
+            //            return variants.TryGetValue("immersive", out var dict) ? dict : variants["vanilla"];
+            //        if (Settings.Contains("mature"))
+            //            return variants.TryGetValue("vanilla_mature", out var dict) ? dict : variants["vanilla"];
+            //        break;
+            //    case "Clint":
+            //        if (Settings.Contains("no_emily"))
+            //            return variants.TryGetValue("no_emily", out var dict) ? dict : variants["vanilla"];
+            //        break;
+            //    case "Krobus":
+            //        if (Settings.Contains("joja"))
+            //            return variants.TryGetValue("vanilla_joja", out var dict) ? dict : variants["vanilla"];
+            //        break; // Посмотри у Джорджа mature ивент, пересмотри по остальным ивенты
+            //}
+
+            return variants.TryGetValue(this.prefix, out var defaultDict)
                 ? defaultDict
                 : null;
         }
@@ -648,6 +724,11 @@
                     ["vanilla"] = new Dictionary<int, string>
                     {
                         { 1, "7142999" },
+                        { 10, "-1"},
+                    },
+                    ["vanilla_mature"] = new Dictionary<int, string>
+                    {
+                        { 1, "7142999" },
                         { 8, "1000021" }, //MATURE
                         { 10, "-1"},
                     },
@@ -657,8 +738,8 @@
                         { 2, "50706112"},
                         { 4, "50706113"},
                         { 7, "50706114"},
-                        //{ 8, "50706115"},
-                        { 8, "1000021" }, //MATURE
+                        { 8, "50706115"},
+                        //{ 8, "1000021" }, //MATURE
                         { 10, "-1"},
                     }
                 },
@@ -712,6 +793,11 @@
                     ["vanilla"] = new Dictionary<int, string>
                     {
                         { 4, "1090503" }, //NO JOJA
+                        { 6, "1090504" },
+                        { 10, "-1"},
+                    },
+                    ["vanilla_joja"] = new Dictionary<int, string>
+                    {
                         { 6, "1090504" },
                         { 10, "-1"},
                     }
